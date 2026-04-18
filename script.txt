@@ -126,7 +126,7 @@ plink --bfile mgp_REL2021_LdW1p4v7 --recode vcf --out mgp_REL2021_LdW1p4v7
 vcf_sample_rename.m
 
 10、File conversion: convert .vcf files to .mat files.
-vcf_to_mat：Filter all SNP sites in the .vcf file and save them in MATLAB format.
+vcf_to_mat.m：Filter all SNP sites in the .vcf file and save them in MATLAB format.
 
 ###########################################
 Getting hSNPs：
@@ -142,8 +142,6 @@ Output the new hSNP positions and save them as a .mat file.
 
 ###########################################
 14、phylogenetic tree
-python D:\My_Design\py\vcf2phylip-2.0\vcf2phylip.py --input mgp_REL2021_LdW1p4v7R_L315669.vcf
-python D:\My_Design\py\vcf2phylip-2.0\vcf2phylip.py --input MGI_CS_phy_L297_03211715.vcf
 
 Construct a phylogenetic tree using MEGA 12.
 
