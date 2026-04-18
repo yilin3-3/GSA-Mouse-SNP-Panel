@@ -1,0 +1,6 @@
+# Matlab相关忽略规则
+*.mat
+*.fig
+*.log
+debug/
+*.mlappinstall
