@@ -1,0 +1,8 @@
+1.transform VCF file into CSV file
+open1
+2.Reorder the samples to match the order of the phylogenetic tree.
+right_order.py
+3.Set the upper triangular elements to zero.
+up0.py
+4.using matlab to draw a heatmap‌
+painting.m
