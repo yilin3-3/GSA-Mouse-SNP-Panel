@@ -150,7 +150,7 @@ PhylogeneticsTree
 16、Phylogenetic tree search based on the invariance criterion. Randomly remove 4 SNPs regardless of whether they are hSNPs. If the tree topology changes, restore the deleted SNPs; if it remains unchanged, continue deleting until no further deletions are possible.
 PhylogeneticsTree
 17、Reconstruct the phylogenetic tree for validation.
-python D:\My_Design\py\vcf2phylip-2.0\vcf2phylip.py --input MGI_CS_phy_L512_11121025.vcf
+python，rf_distance.py
 18、Compare the differences between two phylogenetic trees：
 python，rf_distance.py
 
