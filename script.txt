@@ -1,0 +1,161 @@
+Quality control and LD pruning were performed on 52 strains, and the results were saved for selecting key SNPs to construct the phylogenetic tree.
+####Downloaded .vcf files for 52 e-strains (totaling 200 GB) from the Mouse Genomes Project, and used PLINK to filter and reduce the number of SNPs to facilitate downstream analysis.
+0、The input data is mgp_REL2021_snps.vcf, containing 52 samples.
+1、Set up the PLINK working environment:
+cd ~
+conda activate gwas
+cd /media/y10/BarraCuda/GWAS_DATA/sixteenVCF
+###############################################
+part0: perform sample subsampling and/or file format conversion.
+################################################
+2、File conversion can be performed directly using PLINK.
+plink --vcf mgp_REL2021_snps.vcf --recode --double-id --make-bed --out mouse_GenPro
+
+Total genotyping rate is 0.991611.
+83212162 variants and 52 people pass filters and QC.
+###############################################
+part1: plink quality control
+################################################
+4、delete indels，
+plink --bfile mouse_GenPro --snps-only just-acgt --make-bed --out mouse_GenPro_v1
+Total genotyping rate is 0.991611.
+83212162 variants and 52 people pass filters and QC.
+5、Filter data integrity using PLINK.
+# The following two QC commands will not remove any SNPs or individuals. However, it is good practice to start the QC with these non-stringent thresholds.
+# Delete SNPs with missingness >0.2.
+plink --bfile mouse_GenPro_v1 --geno 0.2 --make-bed --out mouse_GenPro_v2
+831998 variants removed due to missing genotype data (--geno).
+82380164 variants and 52 people pass filters and QC.
+# Delete individuals with missingness >0.2.
+plink --bfile mouse_GenPro_v2 --mind 0.2 --make-bed --out mouse_GenPro_v3
+Total genotyping rate is 0.995229.
+82380164 variants and 52 people pass filters and QC.
+# Delete SNPs with missingness >0.02.
+plink --bfile mouse_GenPro_v3 --geno 0.02 --make-bed --out mouse_GenPro_v4
+3960699 variants removed due to missing genotype data (--geno).
+78419465 variants and 52 people pass filters and QC.
+# Delete individuals with missingness >0.02.
+plink --bfile mouse_GenPro_v4 --mind 0.02 --make-bed --out mouse_GenPro_v5
+Total genotyping rate in remaining samples is 0.999173.
+78419465 variants and 51 people pass filters and QC.
+6、MAF filtering
+plink --bfile mouse_GenPro_v5 --maf 0.05 --make-bed --out mouse_GenPro_v6
+28754273 variants and 51 people pass filters and QC.
+7、In LD pruning, SNP identifiers are required; however, the default variant names in the current file are all '.', so they must be renamed before proceeding to step 8.
+plink_bim_editALL
+
+8、LD pruning
+A)、Calculate correlation using a sliding window with a specified step size. A lower R² threshold results in the filtering out of more sites.
+plink --bfile mouse_GenPro_v6 --indep-pairwise 4000kb 1 0.4 --out ld
+plink --bfile mouse_GenPro_v6 --indep-pairwise 1000kb 2 0.4 --out ld
+
+PLINK v1.90b6.21 64-bit (19 Oct 2020)
+Options in effect:
+  --bfile mouse_GenPro_v6
+  --indep-pairwise 4000kb 1 0.4
+  --out ld
+
+Hostname: i5-14th-WS
+Working directory: /media/y10/BarraCuda/GWAS_DATA/sixteenVCF
+Start time: Tue Nov 11 15:04:23 2025
+28754273 variants loaded from .bim file.
+51 people (0 males, 0 females, 51 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to ld.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 51 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.999114.
+28754273 variants and 51 people pass filters and QC.
+Note: No phenotypes present.
+Pruned 2255363 variants from chromosome 1, leaving 19443.
+Pruned 1890012 variants from chromosome 2, leaving 15605.
+Pruned 1821353 variants from chromosome 3, leaving 15398.
+Pruned 1736984 variants from chromosome 4, leaving 18125.
+Pruned 1653815 variants from chromosome 5, leaving 15626.
+Pruned 1709780 variants from chromosome 6, leaving 13930.
+Pruned 1627675 variants from chromosome 7, leaving 14107.
+Pruned 1423243 variants from chromosome 8, leaving 13042.
+Pruned 1392551 variants from chromosome 9, leaving 12884.
+Pruned 1443366 variants from chromosome 10, leaving 11754.
+Pruned 1363073 variants from chromosome 11, leaving 12359.
+Pruned 1397823 variants from chromosome 12, leaving 12102.
+Pruned 1350795 variants from chromosome 13, leaving 13437.
+Pruned 1355074 variants from chromosome 14, leaving 10108.
+Pruned 1178605 variants from chromosome 15, leaving 8878.
+Pruned 1071838 variants from chromosome 16, leaving 9313.
+Pruned 1122155 variants from chromosome 17, leaving 10866.
+Pruned 1040412 variants from chromosome 18, leaving 9036.
+Pruned 707246 variants from chromosome 19, leaving 6632.
+Pruned 955381 variants from chromosome 23, leaving 15084.
+Pruning complete.  28496544 of 28754273 variants removed.
+
+B)、Extract based on the results.
+plink --bfile mouse_GenPro_v6  --extract ld.prune.in --make-bed --out mgp_REL2021_LdW1p4v7
+
+PLINK v1.90b7.2 64-bit (11 Dec 2023)
+Options in effect:
+  --bfile mgp_REL2021_LdW1p4v7
+  --out mgp_REL2021_LdW1p4v7
+  --recode vcf
+
+Hostname: MBXI5V
+Working directory: X:\WorkData\MGIphylogenetic
+Start time: Wed Nov 12 09:39:24 2025
+
+Random number seed: 1762911564
+16217 MB RAM detected; reserving 8108 MB for main workspace.
+315669 variants loaded from .bim file.
+51 people (0 males, 0 females, 51 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to mgp_REL2021_LdW1p4v7.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 51 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.997094.
+315669 variants and 51 people pass filters and QC.
+Note: No phenotypes present.
+Warning: Underscore(s) present in sample IDs.
+--recode vcf to mgp_REL2021_LdW1p4v7.vcf ... done.
+
+End time: Wed Nov 12 09:39:26 2025
+###########################################
+9、transform into VCF file
+plink --bfile mouse_GenPro_v7 --recode vcf --out mgp_REL2021_Ldp4v7
+plink --bfile mgp_REL2021_LdW1p4v7 --recode vcf --out mgp_REL2021_LdW1p4v7
+170139 variants and 51 people pass filters and QC.
+11、Modify sample names; when converting a VCF file to PLINK format and then back, the names will be duplicated.
+vcf_sample_rename.m
+
+10、File conversion: convert .vcf files to .mat files.
+vcf_to_mat：Filter all SNP sites in the .vcf file and save them in MATLAB format.
+
+###########################################
+Getting hSNPs：
+11、Download gene annotation files to obtain the start positions of gene IDs.
+https://www.gencodegenes.org/mouse/
+gencode.vM37.annotation.gff3.gz
+Read the .gff3 file to extract gene IDs along with their start and end positions, and save the data as a .mat file.gff3_to_mat
+12、Read the supplementary file 41588_2018_223_MOESM5_ESM.xlsx from the paper "Sixteen diverse laboratory mouse reference genomes define strain-specific haplotypes and novel functional loci" to obtain the list of strain-correlated genes and their start and end positions.
+
+13、Based on the gene IDs provided in the paper "Sixteen diverse laboratory mouse reference genomes define strain-specific haplotypes and novel functional loci," match them with the gene IDs in gencode.vM37.annotation.gff3 to query the new gene positions on the m39 sequence.
+hSNP_pos_renew_M39
+Output the new hSNP positions and save them as a .mat file.
+
+###########################################
+14、phylogenetic tree
+python D:\My_Design\py\vcf2phylip-2.0\vcf2phylip.py --input mgp_REL2021_LdW1p4v7R_L315669.vcf
+python D:\My_Design\py\vcf2phylip-2.0\vcf2phylip.py --input MGI_CS_phy_L297_03211715.vcf
+
+Construct a phylogenetic tree using MEGA 12.
+
+15、Phylogenetic tree search based on the invariance criterion. Randomly remove 8 SNPs while retaining all hSNPs, then reconstruct the phylogenetic tree. If the tree topology changes, restore the deleted SNPs; if it remains unchanged, continue deleting until no further deletions are possible.
+PhylogeneticsTree
+16、Phylogenetic tree search based on the invariance criterion. Randomly remove 4 SNPs regardless of whether they are hSNPs. If the tree topology changes, restore the deleted SNPs; if it remains unchanged, continue deleting until no further deletions are possible.
+PhylogeneticsTree
+17、Reconstruct the phylogenetic tree for validation.
+python D:\My_Design\py\vcf2phylip-2.0\vcf2phylip.py --input MGI_CS_phy_L512_11121025.vcf
+18、Compare the differences between two phylogenetic trees：
+python，rf_distance.py
+
+
+
+
